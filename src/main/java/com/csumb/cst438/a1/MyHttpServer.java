@@ -37,16 +37,31 @@ public class MyHttpServer {
                  * @param t
                  * @throws IOException 
                  */
+                
+                private String errorMessage(boolean invalid) {
+                    return invalid ? "<br /><p style=\"color: red;\">Please enter a valid letter</p><br />" : "";
+                }
+                
 		public void handle(HttpExchange t) throws IOException {
 			String uri = t.getRequestURI().toString();
+                        boolean invalid_char = true;
 			System.out.println("URI=" + uri);
+                        // Check length of guess parameter
+                        String uri2 = uri;
+                        if(uri.startsWith("/?guess=")){
+                            String user_val = uri2.substring(uri2.indexOf("/?guess=") + 8, uri2.length());
+                            if(user_val.length() == 1 && (((user_val.charAt(0) >= 65 && user_val.charAt(0) <= 90)) || (user_val.charAt(0) >= 97 && user_val.charAt(0) <= 122))) {
+                                invalid_char = false;
+                            }                       
+                        }
+
 			if (uri.endsWith(".gif") || uri.endsWith(".ico")) {
 				// http get request for an image file
 				sendFile(t, uri.substring(1));
 			} else {
 				// come here to play the game
                                 String response = "";
-                                // get cookie value from http request
+                                // get cookie value from http   request
                                 String requestCookie = t.getRequestHeaders().getFirst("Cookie");
                                 System.out.println("Cookie=" + requestCookie);
                                 // if there is no cookie, or it is "0" or differfent from the current value, then start a new game
@@ -62,13 +77,17 @@ public class MyHttpServer {
                                 } else {
                                     // continue with current game
                                     char ch = uri.charAt(uri.length()-1);  // letter that user has guessed
-                                    int result = game.playGame(ch);
+                                    int result;
+                                    if(invalid_char)
+                                        result = 0;
+                                    else
+                                        result = game.playGame(ch);
                                     switch(result) {
                                         case 0: // good guess, continue game
                                             response = "<!DOCTYPE html><html><head><title>MyHttpServer</title></head><body><h2>Hangman</h2>"
                                             + "<img src=\"" + "h" + game.getState() + ".gif" + "\">"
                                             + "<h2 style=\"font-family:'Lucida Console', monospace\"> " + game.getDisplayWord() + "</h2>"
-                                            + "<form action=\"/\" method=\"get\"> "
+                                            + "<form action=\"/\" method=\"get\"> " + errorMessage(invalid_char) 
                                             + "Guess a character <input type=\"text\" name=\"guess\"><br>"
                                             + "<input type=\"submit\" value=\"Submit\">" + "</form></body></html>";
                                             break;

@@ -50,7 +50,7 @@ public class Game {
     
     public void startNewGame() {
         state = 1;
-        word = "computer";
+        word = randomWord();
         createDisplayWord();
         
     }
