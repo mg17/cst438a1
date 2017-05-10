@@ -47,9 +47,8 @@ public class MyHttpServer {
                         boolean invalid_char = true;
 			System.out.println("URI=" + uri);
                         // Check length of guess parameter
-                        String uri2 = uri;
                         if(uri.startsWith("/?guess=")){
-                            String user_val = uri2.substring(uri2.indexOf("/?guess=") + 8, uri2.length());
+                            String user_val = uri.substring(uri.indexOf("/?guess=") + 8, uri.length());
                             if(user_val.length() == 1 && (((user_val.charAt(0) >= 65 && user_val.charAt(0) <= 90)) || (user_val.charAt(0) >= 97 && user_val.charAt(0) <= 122))) {
                                 invalid_char = false;
                             }                       
