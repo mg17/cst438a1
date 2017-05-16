@@ -56,7 +56,11 @@ public class MyHttpServer {
 
 			if (uri.endsWith(".gif") || uri.endsWith(".ico")) {
 				// http get request for an image file
-				sendFile(t, uri.substring(1));
+				try {
+                                    sendFile(t, uri.substring(1));
+                                } catch(Exception e) {
+                                    
+                                }
 			} else {
 				// come here to play the game
                                 String response = "";
@@ -148,6 +152,15 @@ public class MyHttpServer {
 
                         } catch (Exception e) {
                                 System.out.println("Error in sendFile:" + filename + " " + e.getMessage());
+                                String err = "Error fetching file";
+                                try {
+                                    t.sendResponseHeaders(404, err.length());
+                                    OutputStream os = t.getResponseBody();
+                                    os.write(err.getBytes());
+                                    os.close();
+                                } catch(Exception e2) {
+                                    System.out.println(e2.getMessage());
+                                }
                         }
 
                 }

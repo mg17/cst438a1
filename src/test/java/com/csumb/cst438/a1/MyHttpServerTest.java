@@ -41,15 +41,27 @@ public class MyHttpServerTest {
     public void tearDown() {
     }
 
+    @Test
+    public void test404() {
+        Headers header = new Headers();
+        try {
+            TestHttpExchange t = new TestHttpExchange("/h9.gif", header);
+            MyHttpServer.MyHandler handler = new MyHttpServer.MyHandler();
+            handler.handle(t);
+            System.out.println(t.getResponseCode());
+            assertEquals("Did not return 404", 404, t.getResponseCode());
+        } catch (Exception e) {
+            fail("Unexpected exception in test404(): " + e.getMessage());
+        }
+    }
+    
     /**
      * Test of main method, of class MyHttpServer.
      */
     @Test
     public void testHandle() {
         String expectedBody = "<!DOCTYPE html><html><head><title>MyHttpServer</title></head>" + 
-                "<body><h2>Hangman</h2><img src=\"h1.gif\"><h2 style=\"font-family:'Lucida Console', monospace\">" +
-                " _ _ _ _ _ _ _ _</h2><form action=\"/\" method=\"get\"> Guess a character <input type=\"text\" name=\"guess\"><br>" +
-                "<input type=\"submit\" value=\"Submit\"></form></body></html>";
+                "<body><h2>Hangman</h2><img src=\"h1.gif\"><h2 style=\"font-family:'Lucida Console', monospace\">";
 
 
 
@@ -64,7 +76,7 @@ public class MyHttpServerTest {
         assertEquals("Bad content type", "text/html", response.getFirst("Content-type"));
         assertNotNull("No cookie returned", cookie1);
         assertEquals("Bad response code.",200, t.getResponseCode());
-        assertEquals("Bad response body.",expectedBody, t.getOstream().toString());
+        assertEquals("Bad response body.",expectedBody, t.getOstream().toString().substring(0, expectedBody.length()));
     } catch (Exception e) {
         fail("unexpected exception in testHandle "+e.getMessage());
     }
